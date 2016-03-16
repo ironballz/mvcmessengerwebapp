@@ -1,0 +1,121 @@
+﻿@using MessengerWebApp.ViewModels
+@model RegisterViewModel
+
+@{
+    Html.EnableClientValidation();
+    Html.EnableUnobtrusiveJavaScript();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Register</title>
+
+    <link href="~/Vendors/Bootstrap/Styles/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Contents/Styles/Site.css" rel="stylesheet" />
+
+    <link href="~/Contents/Images/logo-small.png" rel="icon" />
+
+    <script src="~/Scripts/jquery-2.2.1.min.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Vendors/Bootstrap/Scripts/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+
+        <div class="row">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#" data-toggle="modal" data-target="#loginModal">Log In</a></li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="logo-large"></div>
+                <h1 class="text-center">
+                    Q is simple and minimalistic messenger application that has all you need for instant messaging.
+                </h1>
+            </div>
+            <div class="col-md-4">
+                @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-md-6">
+                                @Html.DisplayNameFor(m => m.FirstName)
+                                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                            </div>
+                            <div class="col-md-6">
+                                @Html.DisplayNameFor(m => m.LastName)
+                                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        @Html.DisplayNameFor(m => m.Email)
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        @Html.DisplayNameFor(m => m.Password)
+                        @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    </div>
+                    <div class="form-group">
+                        @Html.DisplayNameFor(m => m.ConfirmPassword)
+                        @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                    </div>
+
+                    <input type="submit" class="btn btn-primary btn-block btn-margin-top" value="Register" />
+
+                    <div>
+                        @Html.ValidationSummary(string.Empty, new { @class = "text-danger" })
+                    </div>
+                }
+            </div>
+        </div>
+
+        <div id="loginModal" class="modal fade" tabindex="-1" role="dialog">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title">Log in</h4>
+                    </div>
+                    <div class="modal-body">
+                        @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+                        {
+                            <div class="row">
+                                <div class="col-md-8 col-md-offset-2">
+                                    <div class="form-group">
+                                        @Html.DisplayName("Email address")
+                                        @Html.TextBox("Email", null, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.DisplayName("Password")
+                                        @Html.Password("Password", null, new { @class = "form-control" })
+                                    </div>
+                                    <div class="form-group">
+                                        @Html.CheckBox("RememberMe")
+                                        @Html.DisplayName("Remember me")
+                                    </div>
+
+                                    <input type="submit" class="btn btn-primary btn-block" value="Login" />
+
+                                    <div>
+                                        @Html.ValidationSummary(string.Empty, new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
