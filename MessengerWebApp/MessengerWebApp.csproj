@@ -105,9 +105,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Contents\Images\logo-large.png" />
-    <Content Include="Contents\Images\logo-small.png" />
-    <Content Include="Contents\Styles\Site.css" />
+    <Content Include="Content\Images\logo-large.png" />
+    <Content Include="Content\Images\logo-small.png" />
+    <Content Include="Content\Styles\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
@@ -157,6 +157,7 @@
   <ItemGroup>
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ChatController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -187,6 +188,7 @@
     <Content Include="Scripts\jquery-2.2.1.min.map" />
     <Content Include="Views\Shared\_SignInLayout.cshtml" />
     <Content Include="Views\Account\SignIn.cshtml" />
+    <Content Include="Views\Chat\Index.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
+using MessengerWebApp.Models;
 
 namespace MessengerWebApp
 {
@@ -13,6 +15,19 @@ namespace MessengerWebApp
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+        }
+
+        protected void Application_PostAuthenticateRequest(Object sender, EventArgs e) {
+            MessengerWebAppDatabaseEntities context = new MessengerWebAppDatabaseEntities();
+
+            if (FormsAuthentication.CookiesSupported) {
+                var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
+                if (authCookie != null) {
+                    var x = FormsAuthentication.Decrypt(authCookie.Value);
+                    var login = FormsAuthentication.Decrypt(authCookie.Value).Name;
+                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(login), new string[0]);
+                }
+            }
         }
     }
 }

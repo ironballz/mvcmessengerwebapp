@@ -10,10 +10,12 @@ namespace MessengerWebApp.ViewModels
     {
         [Required(ErrorMessage = "{0} is required.")]
         [Display(Name = "First name")]
+        [StringLength(50, ErrorMessage = "{0} must be shorter than {1} characters long.")]
         public string FirstName { get; set; }
 
         [Required(ErrorMessage = "{0} is required.")]
         [Display(Name = "Last name")]
+        [StringLength(50, ErrorMessage = "{0} must be shorter than {1} characters long.")]
         public string LastName { get; set; }
 
         [Required(ErrorMessage = "{0} is required.")]
