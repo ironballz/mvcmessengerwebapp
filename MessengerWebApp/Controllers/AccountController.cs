@@ -33,18 +33,18 @@ namespace MessengerWebApp.Controllers
         }
 
         //
-        // GET: /Account/Login
+        // GET: /Account/SignIn
         [AllowAnonymous]
-        public ActionResult Login()
+        public ActionResult SignIn()
         {
             return View();
         }
 
         //
-        // POST: /Account/Login
+        // POST: /Account/SignIn
         [HttpPost]
         [AllowAnonymous]
-        public ActionResult Login(LoginViewModel credentials)
+        public ActionResult SignIn(SignInViewModel credentials)
         {
             if (ModelState.IsValid)
             {

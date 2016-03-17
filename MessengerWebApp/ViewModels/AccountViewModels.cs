@@ -33,10 +33,19 @@ namespace MessengerWebApp.ViewModels
         public string ConfirmPassword { get; set; }
     }
 
-    public class LoginViewModel
+    public class SignInViewModel
     {
+        [Required(ErrorMessage = "{0} is required.")]
+        [EmailAddress(ErrorMessage = "{0} field does not contain valid email address.")]
+        [Display(Name = "Email address")]
         public string Email { get; set; }
+
+        [Required(ErrorMessage = "{0} is required.")]
+        [DataType(DataType.Password)]
+        [Display(Name = "Password")]
         public string Password { get; set; }
+
+        [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; }
     }
 }

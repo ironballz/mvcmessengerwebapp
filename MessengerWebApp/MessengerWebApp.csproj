@@ -188,6 +188,8 @@
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
     <Content Include="Scripts\jquery-2.2.1.min.map" />
+    <Content Include="Views\Shared\_RegistrationLayout.cshtml" />
+    <Content Include="Views\Account\SignIn.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
