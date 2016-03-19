@@ -31,20 +31,41 @@
 
 <script>
     var clientId = "@Model";
+    var messageWebSocket;
 
-    $.get("@Url.Action("GetUsers", "Chat")", { clientId: clientId }, function (data) {
-        for (var i = 0; i < data.length; i++) {
-            $("#users").append(getUserElement(data[i]));
-        }
+    $(document).ready(function () {
+        $.get("@Url.Action("GetUsers", "Chat")", { clientId: clientId }, function (data) {
+            for (var i = 0; i < data.length; i++) {
+                $("#users").append(getUserMarkupObject(data[i]));
+            }
+        });
+
+        $.get("@Url.Action("GetMessages", "Chat")", { clientId: clientId }, function (data) {
+            for (var i = 0; i < data.length; i++) {
+                $("#messagesLog").append(getMessageMarkupObject(data[i]));
+            }
+        });
+
+        messageWebSocket = new WebSocket("ws://" + window.location.hostname + "@Url.Action("MessageHandler", "Chat")"+ "?clientId=" + clientId);
+        messageWebSocket.onmessage = function (e) {
+            $("#messagesLog").append(getMessageMarkupObject(JSON.parse(e.data)));
+        };
+
+        $("#sendButton").click(function () {
+            if (messageWebSocket.readyState === WebSocket.OPEN) {
+                messageWebSocket.send(JSON.stringify({
+                    UserSenderId: clientId,
+                    Content: $("#messageInput").val()
+                }));
+            }
+        });
+
+        $("#signOutLink").click(function() {
+            ws.close();
+        });
     });
 
-    $.get("@Url.Action("GetMessages", "Chat")", { clientId: clientId }, function (data) {
-        for (var i = 0; i < data.length; i++) {
-            $("#messagesLog").append(getMessageElement(data[i]));
-        }
-    });
-
-    function getUserElement(user) {
+    function getUserMarkupObject(user) {
         var row = $("<div></div>").addClass("row chat-user").attr("data-user-id", user.Id);
 
         var info = $("<div></div>").addClass("col-md-8");
@@ -58,10 +79,10 @@
         return row;
     };
 
-    function getMessageElement(message) {
+    function getMessageMarkupObject(message) {
         var row = $("<div></div>").addClass("row chat-msg").attr("data-message-id", message.Id);
 
-        var header = $("<div></div>").addClass("chat-msg-header").append(message.RecordDate + " " + message.SenderName);
+        var header = $("<div></div>").addClass("chat-msg-header").append(message.RecordDate + " " + message.SenderName + " posted:");
         var content = $("<div></div>").addClass("chat-msg-content").html(message.Content);
         var footer = $("<div></div>").addClass("chat-msg-footer text-right");
         if (message.SenderId === clientId) {

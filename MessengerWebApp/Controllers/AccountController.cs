@@ -48,6 +48,7 @@ namespace MessengerWebApp.Controllers
 
                     context.User.Add(user);
                     context.SaveChanges();
+
                     return RedirectToAction("SignIn");
                 }
                 else {
@@ -87,6 +88,8 @@ namespace MessengerWebApp.Controllers
                     user.IsOnline = true;
                     user.LastActivityDate = null;
 
+                    context.SaveChanges();
+
                     FormsAuthentication.SetAuthCookie(credentials.Login, credentials.RememberMe);
                     Session["UserId"] = user.UserId;
                     Session["UserLogin"] = user.Login;
@@ -113,8 +116,12 @@ namespace MessengerWebApp.Controllers
                 user.IsOnline = false;
                 user.LastActivityDate = DateTime.Now;
             }
+
+            context.SaveChanges();
+
             FormsAuthentication.SignOut();
             Session.Abandon();
+
             return RedirectToAction("SignIn");
         }
     }
