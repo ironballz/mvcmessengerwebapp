@@ -24,12 +24,12 @@ namespace MessengerWebApp.ViewModels
         public string Email { get; set; }
 
         [Required(ErrorMessage = "{0} is required.")]
-        [StringLength(20, ErrorMessage = "{0} must be at least {2} and shorter than {1} characters long .", MinimumLength = 3)]
+        [StringLength(20, ErrorMessage = "{0} must be at least {2} and shorter than {1} characters long.", MinimumLength = 3)]
         [Display(Name = "Login")]
         public string Login { get; set; }
 
         [Required(ErrorMessage = "{0} is required.")]
-        [StringLength(20, ErrorMessage = "{0} must be at least {2} and shorter than {1} characters long .", MinimumLength = 6)]
+        [StringLength(20, ErrorMessage = "{0} must be at least {2} and shorter than {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

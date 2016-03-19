@@ -14,7 +14,14 @@ namespace MessengerWebApp.Models
     
     public partial class User
     {
-        public int UserID { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public User()
+        {
+            this.Message = new HashSet<Message>();
+            this.Message1 = new HashSet<Message>();
+        }
+    
+        public System.Guid UserId { get; set; }
         public string Login { get; set; }
         public string Password { get; set; }
         public string FirstName { get; set; }
@@ -23,5 +30,10 @@ namespace MessengerWebApp.Models
         public bool IsOnline { get; set; }
         public int ActivityTimeout { get; set; }
         public Nullable<System.DateTime> LastActivityDate { get; set; }
+    
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Message { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Message> Message1 { get; set; }
     }
 }

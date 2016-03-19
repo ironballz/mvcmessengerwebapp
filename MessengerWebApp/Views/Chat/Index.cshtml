@@ -1,6 +1,78 @@
-﻿
+﻿@model Guid
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>This is a chat view.</h1>
+<div class="row">
+    <div class="col-md-4">
+        <div class="panel panel-default">
+            <div class="panel-heading">People</div>
+            <div class="panel-body users" id="users">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="panel panel-default">
+            <div class="panel-heading">Messages</div>
+            <div class="panel-body messagesLog" id="messagesLog">
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-9">
+        <input type="text" id="messageInput" class="form-control" />
+    </div>
+    <div class="col-md-3">
+        <button type="button" id="sendButton" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-send"></span>&nbsp;Send</button>
+    </div>
+</div>
+
+<script>
+    var clientId = "@Model";
+
+    $.get("@Url.Action("GetUsers", "Chat")", { clientId: clientId }, function (data) {
+        for (var i = 0; i < data.length; i++) {
+            $("#users").append(getUserElement(data[i]));
+        }
+    });
+
+    $.get("@Url.Action("GetMessages", "Chat")", { clientId: clientId }, function (data) {
+        for (var i = 0; i < data.length; i++) {
+            $("#messagesLog").append(getMessageElement(data[i]));
+        }
+    });
+
+    function getUserElement(user) {
+        var row = $("<div></div>").addClass("row chat-user").attr("data-user-id", user.Id);
+
+        var info = $("<div></div>").addClass("col-md-8");
+        var status = $("<span></span>").addClass("status glyphicon glyphicon-cloud" + (user.IsOnline ? " online" : " offline"));
+        row.append(info.append(status).append(user.Login));
+        var actions = $("<div></div>").addClass("col-md-4 actions text-right");
+        actions.append($("<a></a>").attr("href", "#").html($("<span></span>").addClass("glyphicon glyphicon-hourglass"))).append();
+        actions.append($("<a></a>").attr("href", "#").html($("<span></span>").addClass("glyphicon glyphicon-comment")));
+        row.append(actions);
+
+        return row;
+    };
+
+    function getMessageElement(message) {
+        var row = $("<div></div>").addClass("row chat-msg").attr("data-message-id", message.Id);
+
+        var header = $("<div></div>").addClass("chat-msg-header").append(message.RecordDate + " " + message.SenderName);
+        var content = $("<div></div>").addClass("chat-msg-content").html(message.Content);
+        var footer = $("<div></div>").addClass("chat-msg-footer text-right");
+        if (message.SenderId === clientId) {
+            footer.append($("<a></a>").attr("href", "#").text("Edit")).append(" | ");
+            footer.append($("<a></a>").attr("href", "#").text("Delete"));
+        }
+        else {
+            footer.html("&nbsp;");
+        }
+        row.append(header).append(content).append(footer);
+
+        return row;
+    }
+</script>

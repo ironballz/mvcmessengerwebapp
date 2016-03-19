@@ -13,6 +13,7 @@
 
 @using (Html.BeginForm("SignIn", "Account", FormMethod.Post))
 {
+    @Html.AntiForgeryToken()
     <div class="form-group">
         @Html.DisplayNameFor(m => m.Login)
         @Html.TextBoxFor(m => m.Login, new { @class = "form-control" })

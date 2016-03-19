@@ -18,16 +18,22 @@ namespace MessengerWebApp
         }
 
         protected void Application_PostAuthenticateRequest(Object sender, EventArgs e) {
-            MessengerWebAppDatabaseEntities context = new MessengerWebAppDatabaseEntities();
-
             if (FormsAuthentication.CookiesSupported) {
                 var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
                 if (authCookie != null) {
-                    var x = FormsAuthentication.Decrypt(authCookie.Value);
-                    var login = FormsAuthentication.Decrypt(authCookie.Value).Name;
+                    var login = FormsAuthentication.Decrypt(authCookie.Value).Name;                    
                     HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(login), new string[0]);
                 }
             }
+        }
+
+        protected void Session_End(Object sender, EventArgs E)
+        {
+            MessengerWebAppDatabaseEntities context = new MessengerWebAppDatabaseEntities();
+            var userId = (Guid)Session["UserId"];
+            var user = context.User.SingleOrDefault(x => x.UserId == userId);
+            user.IsOnline = false;
+            user.LastActivityDate = DateTime.Now;
         }
     }
 }

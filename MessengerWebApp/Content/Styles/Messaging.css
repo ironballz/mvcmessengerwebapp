@@ -1,0 +1,37 @@
+﻿.users, .messagesLog {
+    height: 500px;
+    max-height: 500px;
+}
+
+.chat-user {
+    margin: 7px 0px;
+    font-size: 16px;
+}
+
+    .chat-user .status {
+        margin-right: 10px;
+    }
+
+    .chat-user .actions a{
+        margin: 0px 5px;
+    }
+
+.chat-msg {
+    margin: 10px 0px;
+}
+
+    .chat-msg .chat-msg-header {
+        font-weight: bold;
+    }
+
+     .chat-msg .chat-msg-footer {
+        font-size: 12px;
+    }
+
+.online {
+    color: #2cb044;
+}
+
+.offline {
+    color: #ccc;
+}

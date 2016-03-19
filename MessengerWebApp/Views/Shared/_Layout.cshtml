@@ -6,6 +6,7 @@
 
     <link rel="stylesheet" href="~/Vendors/Bootstrap/Styles/bootstrap.min.css" />
     <link rel="stylesheet" href="~/Content/Styles/Site.css" />
+    <link rel="stylesheet" href="~/Content/Styles/Messaging.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
 
     <link rel="icon" href="~/Content/Images/logo-small.png" />
@@ -26,12 +27,12 @@
                             <span class="icon-bar"></span>
                         </button>
                         <img class="navbar-brand" src="~/Content/Images/logo-small.png" />
-                        <div class="navbar-brand">@Session["UserLogin"]</div>
+                        <div class="navbar-brand">@User.Identity.Name</div>
                     </div>
                     <div class="collapse navbar-collapse" id="messegerNavbar">
                         <ul class="nav navbar-nav navbar-right">
                             <li><a href="#">Settings</a></li>
-                            <li><a href="#">Sign Out</a></li>
+                            <li>@Html.ActionLink("Sign Out", "SignOut", "Account")</li>
                         </ul>
                     </div>                    
                 </div>
