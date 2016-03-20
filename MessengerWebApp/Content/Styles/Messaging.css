@@ -23,6 +23,7 @@
 
     .message .message-info {
         font-weight: 500;
+        /*font-size: 12px;*/
     }
 
      .message .message-actions {
@@ -32,6 +33,10 @@
 .system-message {
     font-weight: 500;
     margin: 10px 0px;
+}
+
+.modified {
+    color: #ccc;
 }
 
 .online {

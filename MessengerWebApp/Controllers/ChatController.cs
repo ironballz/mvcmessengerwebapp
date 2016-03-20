@@ -58,7 +58,8 @@ namespace MessengerWebApp.Controllers
         }
 
         [HttpGet]
-        public void WebSocketHandler(Guid clientId) {
+        public void WebSocketHandler(Guid clientId)
+        {
             var httpContext = System.Web.HttpContext.Current;
             if (httpContext.IsWebSocketRequest)
             {
@@ -67,7 +68,8 @@ namespace MessengerWebApp.Controllers
             }
         }
 
-        private async Task ProcessWebSocketMessage(AspNetWebSocketContext webSocketContext) {
+        private async Task ProcessWebSocketMessage(AspNetWebSocketContext webSocketContext)
+        {
             var clientSocket = webSocketContext.WebSocket;
 
             try
@@ -78,19 +80,23 @@ namespace MessengerWebApp.Controllers
                     WebSocket = clientSocket
                 });
             }
-            finally {
+            finally
+            {
                 clientIdentityHolder = null;
             }
 
-            while (true) {
+            while (true)
+            {
                 ArraySegment<byte> buffer = new ArraySegment<byte>(new byte[1024]);
                 WebSocketReceiveResult result = await clientSocket.ReceiveAsync(buffer, CancellationToken.None);
-                if (clientSocket.State == WebSocketState.Open) {
+                if (clientSocket.State == WebSocketState.Open)
+                {
                     var messageJson = Encoding.UTF8.GetString(buffer.Array, 0, result.Count);
                     var socketMessage = JsonConvert.DeserializeObject<ChatWebSocketMessage>(messageJson);
 
                     User sender = context.User.SingleOrDefault(x => x.UserId == socketMessage.ClientId);
-                    switch (socketMessage.Type) {
+                    switch (socketMessage.Type)
+                    {
                         case ChatWebSocketMessageType.Join:
                             socketMessage.User.Login = sender.Login;
                             break;
@@ -99,18 +105,38 @@ namespace MessengerWebApp.Controllers
                             break;
                         case ChatWebSocketMessageType.Message:
                             var postedMessage = socketMessage.PostedMessage;
-                            Message message = new Message()
-                            {
-                                MessageId = Guid.NewGuid(),
-                                UserSenderId = socketMessage.ClientId,
-                                Content = postedMessage.Content,
-                                UserReceiverId = postedMessage.ReceiverId,
-                                RecordDate = DateTime.Now,
-                                ModifiedDate = null,
-                                IsDeleted = false
-                            };
 
-                            context.Message.Add(message);
+                            Message message;
+                            if (postedMessage.Id.HasValue)
+                            {
+                                if (!postedMessage.IsDeleted)
+                                {
+                                    message = context.Message.SingleOrDefault(x => x.MessageId == postedMessage.Id);
+                                    message.Content = postedMessage.Content;
+                                    message.ModifiedDate = DateTime.Now;
+                                }
+                                else {
+                                    message = context.Message.SingleOrDefault(x => x.MessageId == postedMessage.Id);
+                                    message.ModifiedDate = DateTime.Now;
+                                    message.IsDeleted = true;
+                                }
+                            }
+                            else
+                            {
+                                message = new Message()
+                                {
+                                    MessageId = Guid.NewGuid(),
+                                    UserSenderId = socketMessage.ClientId,
+                                    Content = postedMessage.Content,
+                                    UserReceiverId = postedMessage.ReceiverId,
+                                    RecordDate = DateTime.Now,
+                                    ModifiedDate = null,
+                                    IsDeleted = false
+                                };
+
+                                context.Message.Add(message);                                
+                            }
+
                             context.SaveChanges();
 
                             socketMessage.PostedMessage.Id = message.MessageId;
@@ -118,7 +144,7 @@ namespace MessengerWebApp.Controllers
                             socketMessage.PostedMessage.SenderName = sender.Login;
                             socketMessage.PostedMessage.RecordDate = message.RecordDate.ToString("dd.MM.yyyy HH:mm:ss");
                             socketMessage.PostedMessage.ModifiedDate = message.ModifiedDate.HasValue ? message.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm:ss") : null;
-                            socketMessage.PostedMessage.IsDeleted = message.IsDeleted;                            
+                            socketMessage.PostedMessage.IsDeleted = message.IsDeleted;
                             break;
                     }
 
@@ -145,10 +171,11 @@ namespace MessengerWebApp.Controllers
                                 await clients[i].WebSocket.SendAsync(buffer, WebSocketMessageType.Text, true, CancellationToken.None);
                             }
                         }
-                        catch {
+                        catch
+                        {
                             clients.Remove(clients[i]);
                             i--;
-                        }                        
+                        }
                     }
                 }
             }

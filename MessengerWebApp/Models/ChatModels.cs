@@ -29,7 +29,7 @@ namespace MessengerWebApp.Models
 
     public class ChatMessage
     {
-        public Guid Id { get; set; }
+        public Guid? Id { get; set; }
         public Guid SenderId { get; set; }
         public string SenderName { get; set; }
         public Guid? ReceiverId { get; set; }
