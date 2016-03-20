@@ -1,32 +1,38 @@
 ﻿.users, .messagesLog {
-    height: 500px;
-    max-height: 500px;
+    height: 50vh;
+    max-height: 50vh;
+    overflow: auto;
 }
 
-.chat-user {
+.user {
     margin: 7px 0px;
     font-size: 16px;
 }
 
-    .chat-user .status {
+    .user .user-status {
         margin-right: 10px;
     }
 
-    .chat-user .actions a{
+    .user .user-actions a{
         margin: 0px 5px;
     }
 
-.chat-msg {
-    margin: 10px 0px;
+.message {
+    margin: 5px 0px;
 }
 
-    .chat-msg .chat-msg-header {
-        font-weight: bold;
+    .message .message-info {
+        font-weight: 500;
     }
 
-     .chat-msg .chat-msg-footer {
+     .message .message-actions {
         font-size: 12px;
     }
+
+.system-message {
+    font-weight: 500;
+    margin: 10px 0px;
+}
 
 .online {
     color: #2cb044;
@@ -34,4 +40,12 @@
 
 .offline {
     color: #ccc;
+}
+
+.message-input {
+    margin-top: 10px;
+}
+
+.send-button {
+    margin-top: 10px;
 }

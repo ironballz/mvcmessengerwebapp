@@ -34,6 +34,7 @@ namespace MessengerWebApp
             var user = context.User.SingleOrDefault(x => x.UserId == userId);
             user.IsOnline = false;
             user.LastActivityDate = DateTime.Now;
+            context.SaveChanges();
         }
     }
 }

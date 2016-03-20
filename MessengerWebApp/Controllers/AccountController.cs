@@ -110,14 +110,18 @@ namespace MessengerWebApp.Controllers
         // GET: /Account/SignOut
         public ActionResult SignOut()
         {
-            var userId = (Guid)Session["UserId"];
-            var user = context.User.SingleOrDefault(x => x.UserId == userId);
-            if (user != null) {
-                user.IsOnline = false;
-                user.LastActivityDate = DateTime.Now;
-            }
+            if (Session["UserId"] != null)
+            {
+                var userId = (Guid)Session["UserId"];
+                var user = context.User.SingleOrDefault(x => x.UserId == userId);
+                if (user != null)
+                {
+                    user.IsOnline = false;
+                    user.LastActivityDate = DateTime.Now;
+                }
 
-            context.SaveChanges();
+                context.SaveChanges();
+            }
 
             FormsAuthentication.SignOut();
             Session.Abandon();

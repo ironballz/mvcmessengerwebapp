@@ -20,18 +20,31 @@
         </div>
     </div>
 </div>
+<div class="row" id="privateMessaging" style="display: none;">
+    <div class="col-md-12">
+        Private message for <strong id="privateClient">ironballz</strong>. 
+        <a href="" id="disablePrivateLink">Disable private messaging mode.</a>
+    </div>
+</div>
 <div class="row">
     <div class="col-md-9">
-        <input type="text" id="messageInput" class="form-control" />
+        <input type="text" id="messageInput" class="form-control message-input" />
     </div>
     <div class="col-md-3">
-        <button type="button" id="sendButton" class="btn btn-primary btn-block"><span class="glyphicon glyphicon-send"></span>&nbsp;Send</button>
+        <button type="button" id="sendButton" class="btn btn-primary btn-block send-button"><span class="glyphicon glyphicon-send"></span>&nbsp;Send</button>
     </div>
 </div>
 
 <script>
     var clientId = "@Model";
-    var messageWebSocket;
+    var privateClientId = null;
+    var chatWebSocket;
+
+    var chatWebSocketMessageType = {
+        JOIN: 0,
+        MESSAGE: 1,
+        LEAVE: 2
+    };
 
     $(document).ready(function () {
         $.get("@Url.Action("GetUsers", "Chat")", { clientId: clientId }, function (data) {
@@ -46,54 +59,136 @@
             }
         });
 
-        messageWebSocket = new WebSocket("ws://" + window.location.hostname + "@Url.Action("MessageHandler", "Chat")"+ "?clientId=" + clientId);
-        messageWebSocket.onmessage = function (e) {
-            $("#messagesLog").append(getMessageMarkupObject(JSON.parse(e.data)));
+        chatWebSocket = new WebSocket("ws://" + window.location.hostname + "@Url.Action("WebSocketHandler", "Chat")" + "?clientId=" + clientId);
+        chatWebSocket.onopen = function () {
+            updateUserStatusOnJoin(chatWebSocket);
+        };
+        chatWebSocket.onmessage = function (e) {
+            var data = JSON.parse(e.data);
+            switch (data.Type) {
+                case chatWebSocketMessageType.JOIN:
+                    $("div[data-user-id=" + data.ClientId + "]").replaceWith(getUserMarkupObject(data.User));
+                    $("#messagesLog").append($("<div></div>").addClass("row system-message text-primary").append(data.User.Login + " has joined the chat."))
+                    break;
+                case chatWebSocketMessageType.LEAVE:
+                    $("div[data-user-id=" + data.ClientId + "]").replaceWith(getUserMarkupObject(data.User));
+                    $("#messagesLog").append($("<div></div>").addClass("row system-message text-primary").append(data.User.Login + " has left the chat."))
+                    break;
+                case chatWebSocketMessageType.MESSAGE:
+                    $("#messagesLog").append(getMessageMarkupObject(data.PostedMessage));
+                    break;
+            }
         };
 
         $("#sendButton").click(function () {
-            if (messageWebSocket.readyState === WebSocket.OPEN) {
-                messageWebSocket.send(JSON.stringify({
-                    UserSenderId: clientId,
-                    Content: $("#messageInput").val()
-                }));
-            }
-        });
+            sendChatMessage(chatWebSocket, $("#messageInput"));
+        });        
 
-        $("#signOutLink").click(function() {
-            ws.close();
+        $("#messageInput").keypress(function (e) {
+            var keyCode = (e.keyCode ? e.keyCode : e.which);
+            if (keyCode == 13) {
+                sendChatMessage(chatWebSocket, $("#messageInput"));
+            }
+        })
+
+        $("#signOutLink").click(function () {
+            updateUserStatusOnLeave(chatWebSocket);
+            chatWebSocket.close();
         });
     });
+    
+    function sendChatMessage(webSocket, messageInput) {
+        if (webSocket.readyState == WebSocket.OPEN) {
+            var message = JSON.stringify({
+                Type: chatWebSocketMessageType.MESSAGE,
+                ClientId: clientId,
+                PostedMessage: {
+                    Content: messageInput.val(),
+                    ReceiverId: privateClientId
+                }
+            });
+            webSocket.send(message);
+            messageInput.val("");
+            messageInput.focus();
+        }
+    }
+
+    function updateUserStatusOnJoin(webSocket) {
+        if (webSocket.readyState == WebSocket.OPEN) {
+            var message = JSON.stringify({
+                Type: chatWebSocketMessageType.JOIN,
+                ClientId: clientId,
+                User: {
+                    Id: clientId,
+                    IsOnline: true,
+                }
+            });
+            webSocket.send(message);
+        }
+    }
+
+    function updateUserStatusOnLeave(webSocket) {
+        if (webSocket.readyState == WebSocket.OPEN) {
+            var message = JSON.stringify({
+                Type: chatWebSocketMessageType.LEAVE,
+                ClientId: clientId,
+                User: {
+                    Id: clientId,
+                    IsOnline: false,
+                }
+            });
+            webSocket.send(message);
+        }
+    }    
 
     function getUserMarkupObject(user) {
-        var row = $("<div></div>").addClass("row chat-user").attr("data-user-id", user.Id);
+        var userItem = $("<div></div>").addClass("row user").attr("data-user-id", user.Id);
 
         var info = $("<div></div>").addClass("col-md-8");
-        var status = $("<span></span>").addClass("status glyphicon glyphicon-cloud" + (user.IsOnline ? " online" : " offline"));
-        row.append(info.append(status).append(user.Login));
-        var actions = $("<div></div>").addClass("col-md-4 actions text-right");
-        actions.append($("<a></a>").attr("href", "#").html($("<span></span>").addClass("glyphicon glyphicon-hourglass"))).append();
-        actions.append($("<a></a>").attr("href", "#").html($("<span></span>").addClass("glyphicon glyphicon-comment")));
-        row.append(actions);
+        var status = $("<span></span>").addClass("user-status glyphicon glyphicon-cloud" + (user.IsOnline ? " online" : " offline"));
+        var login = $("<span></span>").attr("name", "userName").append(user.Login);
+        userItem.append(info.append(status).append(login));
+        
+        userItem.append(getUserActionControls(user));
 
-        return row;
+        return userItem;
     };
 
-    function getMessageMarkupObject(message) {
-        var row = $("<div></div>").addClass("row chat-msg").attr("data-message-id", message.Id);
+    function getUserActionControls(user) {
+        var actions = $("<div></div>").addClass("col-md-4 user-actions text-right");
+        actions.append($("<a></a>").attr("href", "").html($("<span></span>").addClass("glyphicon glyphicon-hourglass"))).append();
+        actions.append($("<a></a>").attr("href", "").html($("<span></span>").addClass("glyphicon glyphicon-comment").click(function (e) {
+            e.preventDefault();
+            privateClientId = user.Id;
+            $("#privateClient").text(user.Login);
+            $("#privateMessaging").show();
+        })));
 
-        var header = $("<div></div>").addClass("chat-msg-header").append(message.RecordDate + " " + message.SenderName + " posted:");
-        var content = $("<div></div>").addClass("chat-msg-content").html(message.Content);
-        var footer = $("<div></div>").addClass("chat-msg-footer text-right");
-        if (message.SenderId === clientId) {
+        return actions;
+    };
+
+    $("#disablePrivateLink").click(function (e) {
+        e.preventDefault();
+        privateClientId = null;
+        $("#privateClient").text("");
+        $("#privateMessaging").hide();
+    });
+
+    function getMessageMarkupObject(message) {
+        var messageItems = $("<div></div>").addClass("row message").attr("data-message-id", message.Id);
+
+        var header = $("<div></div>").addClass("message-info").append(message.RecordDate + " " + message.SenderName + " sent:");
+        var content = $("<div></div>").addClass("message-content").html(message.Content);
+        var footer = $("<div></div>").addClass("message-actions text-right");
+        if (message.SenderId == clientId) {
             footer.append($("<a></a>").attr("href", "#").text("Edit")).append(" | ");
             footer.append($("<a></a>").attr("href", "#").text("Delete"));
         }
         else {
             footer.html("&nbsp;");
         }
-        row.append(header).append(content).append(footer);
+        messageItems.append(header).append(content).append(footer);
 
-        return row;
-    }
+        return messageItems;
+    };
 </script>
