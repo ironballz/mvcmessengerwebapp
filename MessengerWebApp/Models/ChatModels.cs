@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.WebSockets;
 using System.Web;
 
 namespace MessengerWebApp.Models
@@ -12,22 +13,28 @@ namespace MessengerWebApp.Models
         Leave
     }
 
+    public class WebSocketClient
+    {
+        public Guid Identity { get; set; }
+        public WebSocket WebSocket { get; set; }
+    }
+
     public class ChatWebSocketMessage
     {
         public ChatWebSocketMessageType Type { get; set; }
         public Guid ClientId { get; set; }
-        public ChatUser User { get; set; }
-        public ChatMessage PostedMessage { get; set; }
+        public ChatUserInfo UserInfo { get; set; }
+        public ChatPostedMessage PostedMessage { get; set; }
     }
 
-    public class ChatUser
+    public class ChatUserInfo
     {
         public Guid Id { get; set; }
         public string Login { get; set; }
         public bool IsOnline { get; set; }
     }
 
-    public class ChatMessage
+    public class ChatPostedMessage
     {
         public Guid? Id { get; set; }
         public Guid SenderId { get; set; }

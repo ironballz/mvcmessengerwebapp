@@ -1,19 +1,19 @@
-﻿.users, .messagesLog {
+﻿.users-info-container, .messages-log-container {
     height: 50vh;
     max-height: 50vh;
     overflow: auto;
 }
 
-.user {
+.user-info {
     margin: 7px 0px;
     font-size: 16px;
 }
 
-    .user .user-status {
+    .user-info .user-status {
         margin-right: 10px;
     }
 
-    .user .user-actions a{
+    .user-info .user-actions a{
         margin: 0px 5px;
     }
 
@@ -23,7 +23,6 @@
 
     .message .message-info {
         font-weight: 500;
-        /*font-size: 12px;*/
     }
 
      .message .message-actions {

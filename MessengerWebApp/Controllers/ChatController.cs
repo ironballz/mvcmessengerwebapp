@@ -37,10 +37,10 @@ namespace MessengerWebApp.Controllers
         }
 
         [HttpGet]
-        public JsonResult GetUsers(Guid clientId)
+        public JsonResult GetUsersInfo(Guid clientId)
         {
             var users = context.User.Where(x => x.UserId != clientId)
-                .Select(x => new ChatUser()
+                .Select(x => new ChatUserInfo()
                 {
                     Id = x.UserId,
                     Login = x.Login,
@@ -52,7 +52,7 @@ namespace MessengerWebApp.Controllers
         [HttpGet]
         public JsonResult GetMessages(Guid clientId)
         {
-            var messages = new List<ChatMessage>();
+            var messages = new List<ChatPostedMessage>();
 
             return Json(messages, JsonRequestBehavior.AllowGet);
         }
@@ -98,10 +98,10 @@ namespace MessengerWebApp.Controllers
                     switch (socketMessage.Type)
                     {
                         case ChatWebSocketMessageType.Join:
-                            socketMessage.User.Login = sender.Login;
+                            socketMessage.UserInfo.Login = sender.Login;
                             break;
                         case ChatWebSocketMessageType.Leave:
-                            socketMessage.User.Login = sender.Login;
+                            socketMessage.UserInfo.Login = sender.Login;
                             break;
                         case ChatWebSocketMessageType.Message:
                             var postedMessage = socketMessage.PostedMessage;

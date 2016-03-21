@@ -43,7 +43,7 @@ namespace MessengerWebApp.Controllers
                         FirstName = registrationData.FirstName,
                         LastName = registrationData.LastName,
                         Email = registrationData.Email,
-                        ActivityTimeout = 15
+                        IdleTimeout = 15
                     };
 
                     context.User.Add(user);
@@ -86,14 +86,13 @@ namespace MessengerWebApp.Controllers
                 if (user != null)
                 {
                     user.IsOnline = true;
-                    user.LastActivityDate = null;
 
                     context.SaveChanges();
 
                     FormsAuthentication.SetAuthCookie(credentials.Login, credentials.RememberMe);
                     Session["UserId"] = user.UserId;
                     Session["UserLogin"] = user.Login;
-                    Session.Timeout = user.ActivityTimeout;
+                    Session.Timeout = user.IdleTimeout;
 
                     return RedirectToAction("Index", "Chat");
                 }

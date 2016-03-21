@@ -28,7 +28,7 @@ namespace MessengerWebApp.Models
         public string LastName { get; set; }
         public string Email { get; set; }
         public bool IsOnline { get; set; }
-        public int ActivityTimeout { get; set; }
+        public int IdleTimeout { get; set; }
         public Nullable<System.DateTime> LastActivityDate { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

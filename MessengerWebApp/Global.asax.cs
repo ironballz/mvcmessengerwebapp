@@ -29,12 +29,15 @@ namespace MessengerWebApp
 
         protected void Session_End(Object sender, EventArgs E)
         {
-            MessengerWebAppDatabaseEntities context = new MessengerWebAppDatabaseEntities();
-            var userId = (Guid)Session["UserId"];
-            var user = context.User.SingleOrDefault(x => x.UserId == userId);
-            user.IsOnline = false;
-            user.LastActivityDate = DateTime.Now;
-            context.SaveChanges();
+            if (Session["UserId"] != null)
+            {
+                MessengerWebAppDatabaseEntities context = new MessengerWebAppDatabaseEntities();
+                var userId = (Guid)Session["UserId"];
+                var user = context.User.SingleOrDefault(x => x.UserId == userId);
+                user.IsOnline = false;
+                user.LastActivityDate = DateTime.Now;
+                context.SaveChanges();
+            }
         }
     }
 }
