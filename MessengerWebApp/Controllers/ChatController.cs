@@ -58,6 +58,22 @@ namespace MessengerWebApp.Controllers
         }
 
         [HttpGet]
+        public JsonResult GetPrivateMessageHistory(Guid clientId, Guid receiverId) {
+            return Json(1, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        public JsonResult ProlongSessionLifetime() {
+            if (Session.Keys.Count == 0)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+            else {
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+        }
+
+        [HttpGet]
         public void WebSocketHandler(Guid clientId)
         {
             var httpContext = System.Web.HttpContext.Current;
@@ -71,7 +87,6 @@ namespace MessengerWebApp.Controllers
         private async Task ProcessWebSocketMessage(AspNetWebSocketContext webSocketContext)
         {
             var clientSocket = webSocketContext.WebSocket;
-
             try
             {
                 clients.Add(new WebSocketClient()
@@ -142,6 +157,7 @@ namespace MessengerWebApp.Controllers
                             socketMessage.PostedMessage.Id = message.MessageId;
                             socketMessage.PostedMessage.SenderId = message.UserSenderId;
                             socketMessage.PostedMessage.SenderName = sender.Login;
+                            socketMessage.PostedMessage.ReceiverId = message.UserReceiverId;
                             socketMessage.PostedMessage.RecordDate = message.RecordDate.ToString("dd.MM.yyyy HH:mm:ss");
                             socketMessage.PostedMessage.ModifiedDate = message.ModifiedDate.HasValue ? message.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm:ss") : null;
                             socketMessage.PostedMessage.IsDeleted = message.IsDeleted;

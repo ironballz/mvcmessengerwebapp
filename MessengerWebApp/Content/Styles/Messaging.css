@@ -19,6 +19,7 @@
 
 .message {
     margin: 5px 0px;
+    padding: 10px;
 }
 
     .message .message-info {
@@ -29,13 +30,19 @@
         font-size: 12px;
     }
 
+.message-private {
+    background-color: #e0f3ff;
+    border-radius: 5px;
+}
+
 .system-message {
     font-weight: 500;
     margin: 10px 0px;
+    padding: 0px 10px;
 }
 
 .modified {
-    color: #ccc;
+    color: #000;
 }
 
 .online {
