@@ -144,7 +144,7 @@
     };
 
     function onShowPrivateMessageHistory(callback) {
-        enablePrivateMessaging = callback;
+        showPrivateMessagingHistory = callback;
     };
 
     function onEnablePrivateMessaging(callback) {

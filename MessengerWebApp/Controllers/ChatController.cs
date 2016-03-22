@@ -39,31 +39,53 @@ namespace MessengerWebApp.Controllers
         [HttpGet]
         public JsonResult GetUsersInfo(Guid clientId)
         {
-            var users = context.User.Where(x => x.UserId != clientId)
+            List<ChatUserInfo> userInfos = context.User.Where(x => x.UserId != clientId)
                 .Select(x => new ChatUserInfo()
                 {
                     Id = x.UserId,
                     Login = x.Login,
                     IsOnline = x.IsOnline
                 }).OrderBy(x => x.Login).ToList();
-            return Json(users, JsonRequestBehavior.AllowGet);
+            return Json(userInfos, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
         public JsonResult GetMessages(Guid clientId)
         {
-            var messages = new List<ChatPostedMessage>();
+            User user = context.User.SingleOrDefault(x => x.UserId == clientId);
+            List<ChatPostedMessage> messages = new List<ChatPostedMessage>();
+            if (user != null)
+            {
+                List<Message> offlineMessages = context.Message.Where(x => x.RecordDate > user.LastActivityDate && !x.IsDeleted &&
+                (!x.UserReceiverId.HasValue || (x.UserReceiverId.HasValue && (x.UserSenderId == clientId || x.UserReceiverId == clientId)))).OrderBy(x=>x.RecordDate).ToList();
+
+                foreach (var message in offlineMessages)
+                {
+                    messages.Add(ConvertToPostedMessage(message));
+                }
+            }
 
             return Json(messages, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public JsonResult GetPrivateMessageHistory(Guid clientId, Guid receiverId) {
-            return Json(1, JsonRequestBehavior.AllowGet);
+        public JsonResult GetPrivateMessagesHistory(Guid clientId, Guid receiverId)
+        {
+            List<ChatPostedMessage> messages = new List<ChatPostedMessage>();
+            List<Message> privateMessages = context.Message.Where(x =>!x.IsDeleted && ((x.UserSenderId == clientId && x.UserReceiverId == receiverId) || (x.UserSenderId == receiverId && x.UserReceiverId == clientId)))
+                .OrderByDescending(x => x.RecordDate).Take(1000).ToList();
+
+            foreach (var message in privateMessages)
+            {
+                messages.Add(ConvertToPostedMessage(message));
+            }
+
+            return Json(messages, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public JsonResult ProlongSessionLifetime() {
+        public JsonResult ProlongSessionLifetime()
+        {
             if (Session.Keys.Count == 0)
             {
                 return Json(false, JsonRequestBehavior.AllowGet);
@@ -149,18 +171,12 @@ namespace MessengerWebApp.Controllers
                                     IsDeleted = false
                                 };
 
-                                context.Message.Add(message);                                
+                                context.Message.Add(message);
                             }
 
                             context.SaveChanges();
 
-                            socketMessage.PostedMessage.Id = message.MessageId;
-                            socketMessage.PostedMessage.SenderId = message.UserSenderId;
-                            socketMessage.PostedMessage.SenderName = sender.Login;
-                            socketMessage.PostedMessage.ReceiverId = message.UserReceiverId;
-                            socketMessage.PostedMessage.RecordDate = message.RecordDate.ToString("dd.MM.yyyy HH:mm:ss");
-                            socketMessage.PostedMessage.ModifiedDate = message.ModifiedDate.HasValue ? message.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm:ss") : null;
-                            socketMessage.PostedMessage.IsDeleted = message.IsDeleted;
+                            socketMessage.PostedMessage = ConvertToPostedMessage(message);
                             break;
                     }
 
@@ -195,6 +211,24 @@ namespace MessengerWebApp.Controllers
                     }
                 }
             }
+        }
+
+        [NonAction]
+        public ChatPostedMessage ConvertToPostedMessage(Message message) {
+            User sender = context.User.SingleOrDefault(x => x.UserId == message.UserSenderId);
+            ChatPostedMessage postedMessage = new ChatPostedMessage()
+            {
+                Id = message.MessageId,
+                SenderId = message.UserSenderId,
+                SenderName = message.User1.Login,
+                Content = message.Content,
+                ReceiverId = message.UserReceiverId,
+                RecordDate = message.RecordDate.ToString("dd.MM.yyyy HH:mm:ss"),
+                ModifiedDate = message.ModifiedDate.HasValue ? message.ModifiedDate.Value.ToString("dd.MM.yyyy HH:mm:ss") : null,
+                IsDeleted = message.IsDeleted
+            };
+
+            return postedMessage;
         }
     }
 }

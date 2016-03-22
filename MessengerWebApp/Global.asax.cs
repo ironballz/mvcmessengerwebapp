@@ -21,8 +21,8 @@ namespace MessengerWebApp
             if (FormsAuthentication.CookiesSupported) {
                 var authCookie = Request.Cookies[FormsAuthentication.FormsCookieName];
                 if (authCookie != null) {
-                    var login = FormsAuthentication.Decrypt(authCookie.Value).Name;                    
-                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(login), new string[0]);
+                    var decryptedCookie = FormsAuthentication.Decrypt(authCookie.Value);
+                    HttpContext.Current.User = new System.Security.Principal.GenericPrincipal(new System.Security.Principal.GenericIdentity(decryptedCookie.Name), new string[0]);
                 }
             }
         }
