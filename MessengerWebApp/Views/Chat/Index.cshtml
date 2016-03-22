@@ -4,12 +4,13 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+<!-- Private messages history modal. -->
 <div id="privateMessageHistoryModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Private messages history</h4>
+                <h4 class="modal-title"></h4>
             </div>
             <div class="modal-body" style="max-height: 50vh; overflow: auto;">
             </div>
@@ -21,6 +22,7 @@
     <div class="col-md-4">
         <div class="panel panel-default">
             <div class="panel-heading">People</div>
+            <!-- Users information container block. -->
             <div class="panel-body users-info-container" id="usersInfoContainer">
             </div>
         </div>
@@ -28,17 +30,20 @@
     <div class="col-md-8">
         <div class="panel panel-default">
             <div class="panel-heading">Messages</div>
+            <!-- Messages log container block. -->
             <div class="panel-body messages-log-container" id="messagesLogContainer">
             </div>
         </div>
     </div>
 </div>
+<!-- Private messaging mode toggle indication block. -->
 <div class="row" id="privateMessaging" style="display: none;">
     <div class="col-md-12">
         Private message for <strong id="privateClient">ironballz</strong>.
         <a href="" id="disablePrivateLink">Disable private messaging.</a>
     </div>
 </div>
+<!-- Posted message controls block. -->
 <div class="row">
     <div class="col-md-9">
         <input type="text" id="messageInput" class="form-control message-input" />
@@ -49,67 +54,96 @@
     </div>
 </div>
 
+<!-- Messaging module file. -->
 <script src="~/Scripts/messaging.js"></script>
 
 <script>
+    // Current chat client / user identity.
     var clientId = "@Model";
+    // Chat web socket object variable.
     var chatWebSocket;
 
     $(document).ready(function () {
+        // Setting prolong session lifetime action url.
         app.messaging.setProlongSessionLifetimeUrl("@Url.Action("ProlongSessionLifetime", "Chat")");
+        // Invoke idle time handling function.
         app.messaging.handleIdleTime(@Session.Timeout, function () {
             $("#signOutLink").trigger("click");
         });
 
+        // Chat web socket initialization.
         chatWebSocket = new WebSocket("ws://" + window.location.hostname + "@Url.Action("WebSocketHandler", "Chat")" + "?clientId=" + clientId);
 
+        // Chat web socket event handler on connection opened.
         chatWebSocket.onopen = function () {
+            // Updating current user status for all online users.
             app.messaging.updateUserStatusOnJoin(chatWebSocket);
 
+            // Gets all chat users information.
             $.get("@Url.Action("GetUsersInfo", "Chat")", { clientId: clientId }, function (data) {
                 for (var i = 0; i < data.length; i++) {
                     $("#usersInfoContainer").append(app.messaging.getUserMarkup(data[i], true));
                 }
             });
 
+            // Gets all messages received during current user offline time.
             $.get("@Url.Action("GetMessages", "Chat")", { clientId: clientId }, function (data) {
                 for (var i = 0; i < data.length; i++) {
                     $("#messagesLogContainer").append(app.messaging.getMessageMarkup(data[i]));
                 }
+                scrollMessagesLog();
             });
         };
 
+        // Chat web socket event handler on message received.
         chatWebSocket.onmessage = function (e) {
+            // Received data.
             var data = JSON.parse(e.data);
+            // Check message type for further message processing.
             switch (data.Type) {
                 case app.messaging.webSocketMessageType.JOIN:
+                    // User has been joined to the chat.
                     var $userItem = $("div[data-user-id=" + data.ClientId + "]");
+                    // Check if joined user item already exists in user container block;
                     if($userItem.length){
+                        // Replace user item with new generated markup object.
                         $userItem.replaceWith(app.messaging.getUserMarkup(data.UserInfo, true));
                     }
                     else if(data.ClientId != clientId){
+                        // Append new generated user markup object.
                         $("#usersInfoContainer").append(app.messaging.getUserMarkup(data.UserInfo, true));
                     }
+                    // Add corresponding message to messages log.
                     $("#messagesLogContainer").append($("<div></div>").addClass("row system-message text-primary").append(data.UserInfo.Login + " has joined the chat."));
-                    $("#messagesLogContainer").animate({ scrollTop: $("#messagesLogContainer").prop("scrollHeight") }, 500);
+                    scrollMessagesLog();
                     break;
                 case app.messaging.webSocketMessageType.LEAVE:
+                    // Replace user item with new generated markup object.
                     $("div[data-user-id=" + data.ClientId + "]").replaceWith(app.messaging.getUserMarkup(data.UserInfo, true));
+                    // Add corresponding message to messages log.
                     $("#messagesLogContainer").append($("<div></div>").addClass("row system-message text-primary").append(data.UserInfo.Login + " has left the chat."));
-                    $("#messagesLogContainer").animate({ scrollTop: $("#messagesLogContainer").prop("scrollHeight") }, 500);
+                    scrollMessagesLog();
                     break;
                 case app.messaging.webSocketMessageType.MESSAGE:
                     if (data.PostedMessage.ModifiedDate) {
+                        // Replace posted message with new generated markup object if it has been modified or deleted.
                         $("div[data-message-id=" + data.PostedMessage.Id + "]").replaceWith(app.messaging.getMessageMarkup(data.PostedMessage));
                     }
                     else {
+                        // Append new generated message markup object.
                         $("#messagesLogContainer").append(app.messaging.getMessageMarkup(data.PostedMessage));
-                        $("#messagesLogContainer").animate({ scrollTop: $("#messagesLogContainer").prop("scrollHeight") }, 500);
+                        scrollMessagesLog();
                     }
                     break;
             }
         };
 
+        // Scroll messages log container scrollbar to bottom;
+        function scrollMessagesLog(){
+            $("#messagesLogContainer").animate({ scrollTop: $("#messagesLogContainer").prop("scrollHeight") }, 300);
+        };
+
+        // Validate posted message input text.
         function validatePostedMessage() {
             var isValid = true;
             $("#messageInputValidation").text("");
@@ -125,6 +159,7 @@
             return isValid;
         }
 
+        // Send button click event handler.
         $("#sendButton").click(function () {
             var isValid = validatePostedMessage();
             if (isValid) {
@@ -132,6 +167,7 @@
             }
         });
 
+        // Message input "Enter" key press event handler.
         $("#messageInput").keypress(function (e) {
             var keyCode = (e.keyCode ? e.keyCode : e.which);
             if (keyCode == 13) {
@@ -142,13 +178,16 @@
             }
         });
 
+        // Disable private messaging link click event hadler.
         $("#disablePrivateLink").click(function (e) {
             e.preventDefault();
             app.messaging.setPostedMessageParams(null, null, false);
             $("#privateClient").text("");
             $("#privateMessaging").hide();
+            $("#messageInput").val("");
         });
 
+        // Sign out link click event hadler.
         $("#signOutLink").click(function (e) {
             e.preventDefault();
             app.messaging.updateUserStatusOnLeave(chatWebSocket);
@@ -157,7 +196,9 @@
         });
     });
 
+    // Setting handler function on "show private messages history" link click.
     app.messaging.onShowPrivateMessageHistory(function(userData){
+        // Get private messages history and show them in modal.
         $.get("@Url.Action("GetPrivateMessagesHistory", "Chat")",
             { clientId: clientId, receiverId: userData.Id },
             function(messages){
@@ -175,18 +216,23 @@
             });
     });
 
+    // Setting handler function on "enable private messaging mode" link click.
     app.messaging.onEnablePrivateMessaging(function (userData) {
         app.messaging.setPostedMessageParams(null, userData.Id, false);
         $("#privateClient").text(userData.Login);
         $("#privateMessaging").show();
     });
 
+    // Setting handler function on "edit posted message" link click.
     app.messaging.onEditPostedMessage(function (messageData) {
+        $("#disablePrivateLink").trigger("click");
         app.messaging.setPostedMessageParams(messageData.Id, null, false);
         $("#messageInput").val(messageData.Content);
     });
 
+    // Setting handler function on "delete posted message" link click.
     app.messaging.onDeletePostedMessage(function (messageData) {
+        $("#disablePrivateLink").trigger("click");
         app.messaging.setPostedMessageParams(messageData.Id, null, true);
         app.messaging.sendPostedMessage(chatWebSocket, $("#messageInput"));
     });

@@ -85,10 +85,10 @@ namespace MessengerWebApp.ViewModels
         [Required(ErrorMessage = "{0} is required.")]
         [StringLength(20, ErrorMessage = "{0} must be at least {2} and shorter than {1} characters long.", MinimumLength = 6)]
         [Display(Name = "New password")]
-        public string Password { get; set; }
+        public string NewPassword { get; set; }
 
-        [Compare("Password", ErrorMessage = "New password and confirmation password do not match.")]
+        [Compare("NewPassword", ErrorMessage = "New password and confirmation password do not match.")]
         [Display(Name = "Confirm new password")]       
-        public string ConfirmPassword { get; set; }
+        public string ConfirmNewPassword { get; set; }
     }
 }

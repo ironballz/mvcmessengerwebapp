@@ -200,7 +200,7 @@ namespace MessengerWebApp.Controllers
 
                     if (user.Password == passwords.OldPassword)
                     {
-                        user.Password = passwords.Password;
+                        user.Password = passwords.NewPassword;
 
                         context.SaveChanges();
 

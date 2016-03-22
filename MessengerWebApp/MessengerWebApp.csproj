@@ -107,8 +107,8 @@
   <ItemGroup>
     <Content Include="Content\Images\logo-large.png" />
     <Content Include="Content\Images\logo-small.png" />
-    <Content Include="Content\Styles\Messaging.css" />
-    <Content Include="Content\Styles\Site.css" />
+    <Content Include="Content\Styles\messaging.css" />
+    <Content Include="Content\Styles\site.css" />
     <Content Include="Global.asax" />
     <Content Include="Models\Model1.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
