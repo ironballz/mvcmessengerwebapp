@@ -31,7 +31,7 @@
           <Property Name="IdleTimeout" Type="int" Nullable="false" />
           <Property Name="LastActivityDate" Type="datetime" />
         </EntityType>
-        <Association Name="FK__Message__UserRec__59063A47">
+        <Association Name="FK__Message__UserRec__164452B1">
           <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
           <ReferentialConstraint>
@@ -43,7 +43,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Message__UserSen__5812160E">
+        <Association Name="FK__Message__UserSen__15502E78">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
           <ReferentialConstraint>
@@ -58,11 +58,11 @@
         <EntityContainer Name="MessengerWebAppDatabaseModelStoreContainer">
           <EntitySet Name="Message" EntityType="Self.Message" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="User" EntityType="Self.User" Schema="dbo" store:Type="Tables" />
-          <AssociationSet Name="FK__Message__UserRec__59063A47" Association="Self.FK__Message__UserRec__59063A47">
+          <AssociationSet Name="FK__Message__UserRec__164452B1" Association="Self.FK__Message__UserRec__164452B1">
             <End Role="User" EntitySet="User" />
             <End Role="Message" EntitySet="Message" />
           </AssociationSet>
-          <AssociationSet Name="FK__Message__UserSen__5812160E" Association="Self.FK__Message__UserSen__5812160E">
+          <AssociationSet Name="FK__Message__UserSen__15502E78" Association="Self.FK__Message__UserSen__15502E78">
             <End Role="User" EntitySet="User" />
             <End Role="Message" EntitySet="Message" />
           </AssociationSet>
@@ -83,8 +83,8 @@
           <Property Name="RecordDate" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="ModifiedDate" Type="DateTime" Precision="3" />
           <Property Name="IsDeleted" Type="Boolean" Nullable="false" />
-          <NavigationProperty Name="User" Relationship="Self.FK__Message__UserRec__59063A47" FromRole="Message" ToRole="User" />
-          <NavigationProperty Name="User1" Relationship="Self.FK__Message__UserSen__5812160E" FromRole="Message" ToRole="User" />
+          <NavigationProperty Name="User" Relationship="Self.FK__Message__UserRec__164452B1" FromRole="Message" ToRole="User" />
+          <NavigationProperty Name="User1" Relationship="Self.FK__Message__UserSen__15502E78" FromRole="Message" ToRole="User" />
         </EntityType>
         <EntityType Name="User">
           <Key>
@@ -99,10 +99,10 @@
           <Property Name="IsOnline" Type="Boolean" Nullable="false" />
           <Property Name="IdleTimeout" Type="Int32" Nullable="false" />
           <Property Name="LastActivityDate" Type="DateTime" Precision="3" />
-          <NavigationProperty Name="Message" Relationship="Self.FK__Message__UserRec__59063A47" FromRole="User" ToRole="Message" />
-          <NavigationProperty Name="Message1" Relationship="Self.FK__Message__UserSen__5812160E" FromRole="User" ToRole="Message" />
+          <NavigationProperty Name="Message" Relationship="Self.FK__Message__UserRec__164452B1" FromRole="User" ToRole="Message" />
+          <NavigationProperty Name="Message1" Relationship="Self.FK__Message__UserSen__15502E78" FromRole="User" ToRole="Message" />
         </EntityType>
-        <Association Name="FK__Message__UserRec__59063A47">
+        <Association Name="FK__Message__UserRec__164452B1">
           <End Role="User" Type="Self.User" Multiplicity="0..1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
           <ReferentialConstraint>
@@ -114,7 +114,7 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="FK__Message__UserSen__5812160E">
+        <Association Name="FK__Message__UserSen__15502E78">
           <End Role="User" Type="Self.User" Multiplicity="1" />
           <End Role="Message" Type="Self.Message" Multiplicity="*" />
           <ReferentialConstraint>
@@ -129,11 +129,11 @@
         <EntityContainer Name="MessengerWebAppDatabaseEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Message" EntityType="Self.Message" />
           <EntitySet Name="User" EntityType="Self.User" />
-          <AssociationSet Name="FK__Message__UserRec__59063A47" Association="Self.FK__Message__UserRec__59063A47">
+          <AssociationSet Name="FK__Message__UserRec__164452B1" Association="Self.FK__Message__UserRec__164452B1">
             <End Role="User" EntitySet="User" />
             <End Role="Message" EntitySet="Message" />
           </AssociationSet>
-          <AssociationSet Name="FK__Message__UserSen__5812160E" Association="Self.FK__Message__UserSen__5812160E">
+          <AssociationSet Name="FK__Message__UserSen__15502E78" Association="Self.FK__Message__UserSen__15502E78">
             <End Role="User" EntitySet="User" />
             <End Role="Message" EntitySet="Message" />
           </AssociationSet>

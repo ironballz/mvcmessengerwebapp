@@ -203,7 +203,7 @@
             { clientId: clientId, receiverId: userData.Id },
             function(messages){
                 $("#privateMessageHistoryModal .modal-body").html("");
-                $("#privateMessageHistoryModal .modal-title").text("Private conversation with \"" + userData.Login + "\".");
+                $("#privateMessageHistoryModal .modal-title").text("History: private conversation with \"" + userData.Login + "\".");
                 if(messages.length){
                     for (var i = 0; i < messages.length; i++) {
                         $("#privateMessageHistoryModal .modal-body").append(app.messaging.getMessageMarkup(messages[i]));

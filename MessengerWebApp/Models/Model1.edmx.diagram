@@ -4,11 +4,11 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="d82bd94668d3426faf6a36a9c62e8e29" Name="Diagram1">
+      <Diagram DiagramId="91ae82e651fc4149b0ffd1b6597ba858" Name="Diagram1">
         <EntityTypeShape EntityType="MessengerWebAppDatabaseModel.Message" Width="1.5" PointX="3" PointY="1.125" IsExpanded="true" />
         <EntityTypeShape EntityType="MessengerWebAppDatabaseModel.User" Width="1.5" PointX="0.75" PointY="1" IsExpanded="true" />
-        <AssociationConnector Association="MessengerWebAppDatabaseModel.FK__Message__UserRec__59063A47" ManuallyRouted="false" />
-        <AssociationConnector Association="MessengerWebAppDatabaseModel.FK__Message__UserSen__5812160E" ManuallyRouted="false" />
+        <AssociationConnector Association="MessengerWebAppDatabaseModel.FK__Message__UserRec__164452B1" ManuallyRouted="false" />
+        <AssociationConnector Association="MessengerWebAppDatabaseModel.FK__Message__UserSen__15502E78" ManuallyRouted="false" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
