@@ -40,3 +40,8 @@ div[data-valmsg-summary="true"] ul {
     div[data-valmsg-summary="true"] ul li {
         margin-bottom: 10px;
     }
+
+.save-success {
+    padding: 0;
+    margin-top: 15px;
+}

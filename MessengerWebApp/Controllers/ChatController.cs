@@ -73,7 +73,7 @@ namespace MessengerWebApp.Controllers
         {
             List<ChatPostedMessage> messages = new List<ChatPostedMessage>();
             List<Message> privateMessages = context.Message.Where(x =>!x.IsDeleted && ((x.UserSenderId == clientId && x.UserReceiverId == receiverId) || (x.UserSenderId == receiverId && x.UserReceiverId == clientId)))
-                .OrderByDescending(x => x.RecordDate).Take(1000).ToList();
+                .OrderByDescending(x => x.RecordDate).Take(1000).OrderBy(x=>x.RecordDate).ToList();
 
             foreach (var message in privateMessages)
             {
